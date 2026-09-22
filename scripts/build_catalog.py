@@ -73,13 +73,7 @@ def variant_name(label):
 def build_variants_from_engines():
     src=DIST/"engines.csv"; out=DIST/"variants.csv"
     seen={}
-    if src.exists():
-        with src.open(encoding="utf-8",newline="") as f:
-            for r in csv.DictReader(f):
-                make=norm_make(r.get("make","")); model=clean(r.get("model","")); label=variant_name(r.get("engine_label",""))
-                if not (make and model and label): continue
-                key=(make,model,label.casefold())
-                seen.setdefault(key,{"make":make,"model":model,"variant":label,"source":"upstream-engine-label","verified":"false","sort_order":"999"})
+    # Engine rows are source material only; never public picker variants.
     curated=ROOT/"data"/"curated-variants.csv"
     if curated.exists():
         with curated.open(encoding="utf-8-sig",newline="") as f:
@@ -102,13 +96,13 @@ def build_catalog():
         m=makes.setdefault(r["make"],{"name":r["make"],"market":r["market"],"priority":int(r["market_priority"]),"models":[]})
         m["models"].append({"name":r["model"],"yearFrom":int(r["year_start"]) if r.get("year_start","").isdigit() else None,
                             "yearTo":int(r["year_end"]) if r.get("year_end","").isdigit() else None})
-    # Every upstream engine row contributes a selectable variant so existing listings
-    # are never hidden. Curated market badges are merged in and sorted first.
+    # Public picker exposes curated commercial badges only.
     variant_rows=build_variants_from_engines()
     variant_map={}
     for v in variant_rows:
+        if str(v["verified"]).lower()!="true": continue
         key=(v["make"],v["model"])
-        variant_map.setdefault(key,[]).append({"name":v["variant"],"sortOrder":int(v["sort_order"] or 999),"verified":str(v["verified"]).lower()=="true"})
+        variant_map.setdefault(key,[]).append({"name":v["variant"],"sortOrder":int(v["sort_order"] or 999)})
     for make in makes.values():
         for model in make["models"]:
             model["variants"]=sorted(variant_map.get((make["name"],model["name"]),[]),key=lambda x:(x["sortOrder"],x["name"].lower()))
