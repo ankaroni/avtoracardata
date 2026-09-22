@@ -76,11 +76,11 @@ def variant_name(label):
     return s.strip()
 
 def build_variants_from_engines():
-    src=DIST/"engines.csv"; out=DIST/"variants.csv"
+    out=DIST/"variants.csv"
     seen={}
-    # Engine rows are source material only; never public picker variants.
-    curated=ROOT/"data"/"curated-variants.csv"
-    if curated.exists():
+    # Merge external verified catalog first, then local curation overrides it.
+    for curated in [ROOT/"data"/"fleetbyte-variants.csv",ROOT/"data"/"curated-variants.csv"]:
+        if not curated.exists(): continue
         with curated.open(encoding="utf-8-sig",newline="") as f:
             for r in csv.DictReader(f):
                 make=norm_make(r.get("make","")); model=norm_model(make,r.get("model","")); label=clean(r.get("variant",""))
