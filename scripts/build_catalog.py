@@ -16,6 +16,7 @@ BG_PRIORITY=[
 "BYD","MG","Smart"
 ]
 ALIASES={"VW":"Volkswagen","Mercedes Benz":"Mercedes-Benz","Mercedes":"Mercedes-Benz","Citroën":"Citroen","Škoda":"Skoda"}
+MODEL_ALIASES={"Mercedes-Benz":{"A-Klasse":"A-Class","B-Klasse":"B-Class","C-Klasse":"C-Class","E-Klasse":"E-Class","G-Klasse":"G-Class","M-Klasse":"M-Class","R-Klasse":"R-Class","S-Klasse":"S-Class","V-Klasse":"V-Class","X-Klasse":"X-Class"}}
 
 REPLACEMENTS=[
 (r"\bBenzin\b","Petrol"),(r"\bOttomotor\b","Petrol"),(r"\bDieselkraftstoff\b","Diesel"),
@@ -42,6 +43,9 @@ def dl(name):
     return p
 
 def norm_make(v): return ALIASES.get(clean(v),clean(v))
+def norm_model(make,v):
+    v=clean(v)
+    return MODEL_ALIASES.get(make,{}).get(v,v)
 
 def normalize_csv(name):
     src=dl(name); out=DIST/name
@@ -54,6 +58,7 @@ def normalize_csv(name):
             row={k:clean(v) for k,v in row.items()}
             if "make" in row:
                 row["make"]=norm_make(row["make"])
+                if "model" in row: row["model"]=norm_model(row["make"],row["model"])
                 try: rank=BG_PRIORITY.index(row["make"])+1
                 except ValueError: rank=999
                 row["market"]="BG" if rank<999 else "GLOBAL"
@@ -78,7 +83,7 @@ def build_variants_from_engines():
     if curated.exists():
         with curated.open(encoding="utf-8-sig",newline="") as f:
             for r in csv.DictReader(f):
-                make=norm_make(r.get("make","")); model=clean(r.get("model","")); label=clean(r.get("variant",""))
+                make=norm_make(r.get("make","")); model=norm_model(make,r.get("model","")); label=clean(r.get("variant",""))
                 if not (make and model and label): continue
                 seen[(make,model,label.casefold())]={"make":make,"model":model,"variant":label,"source":r.get("source","curated"),"verified":r.get("verified","true"),"sort_order":r.get("sort_order","999")}
     rows=sorted(seen.values(),key=lambda r:(r["make"].casefold(),r["model"].casefold(),int(r["sort_order"] or 999),r["variant"].casefold()))
