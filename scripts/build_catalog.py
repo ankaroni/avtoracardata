@@ -71,7 +71,19 @@ def build_catalog():
         m=makes.setdefault(r["make"],{"name":r["make"],"market":r["market"],"priority":int(r["market_priority"]),"models":[]})
         m["models"].append({"name":r["model"],"yearFrom":int(r["year_start"]) if r.get("year_start","").isdigit() else None,
                             "yearTo":int(r["year_end"]) if r.get("year_end","").isdigit() else None})
-    (DIST/"catalog.json").write_text(json.dumps({"market":"BG","makes":list(makes.values())},ensure_ascii=False,separators=(",",":")),encoding="utf-8")
+    # Attach verified commercial variants used by the public listing picker.
+    curated=ROOT/"data"/"curated-variants.csv"
+    variant_map={}
+    if curated.exists():
+        with curated.open(encoding="utf-8-sig",newline="") as vf:
+            for v in csv.DictReader(vf):
+                if str(v.get("verified","")).lower()!="true": continue
+                key=(norm_make(v["make"]),clean(v["model"]))
+                variant_map.setdefault(key,[]).append({"name":clean(v["variant"]),"sortOrder":int(v.get("sort_order") or 999)})
+    for make in makes.values():
+        for model in make["models"]:
+            model["variants"]=sorted(variant_map.get((make["name"],model["name"]),[]),key=lambda x:(x["sortOrder"],x["name"].lower()))
+    (DIST/"catalog.json").write_text(json.dumps({"market":"BG","pickerHierarchy":["make","model","variant"],"makes":list(makes.values())},ensure_ascii=False,separators=(",",":")),encoding="utf-8")
     with (DIST/"bulgaria-makes.csv").open("w",encoding="utf-8",newline="") as f:
         w=csv.writer(f); w.writerow(["priority","make"])
         for i,m in enumerate(BG_PRIORITY,1):w.writerow([i,m])
