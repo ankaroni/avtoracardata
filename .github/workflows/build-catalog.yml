@@ -1,6 +1,11 @@
 name: Build Bulgaria vehicle catalog
 on:
   workflow_dispatch:
+    inputs:
+      refresh_variants:
+        description: "Refresh all commercial variants"
+        required: false
+        default: "true"
   push:
     branches: [main]
     paths:
@@ -24,6 +29,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Import verified commercial variants
+        if: github.event_name != 'push' || github.event.head_commit.message != 'data: refresh all-brand vehicle variants'
         run: python scripts/import_fleetbyte_variants.py
       - name: Build catalog
         run: python scripts/build_catalog.py
