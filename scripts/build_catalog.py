@@ -61,6 +61,37 @@ def normalize_csv(name):
             w.writerow(row)
     src.unlink(missing_ok=True)
 
+def variant_name(label):
+    """Derive a clean selectable variant from an upstream engine label.
+    We keep the source label when no trustworthy commercial badge is present;
+    curated rows override/add true market badges such as A 180 d."""
+    s=clean(label)
+    # Remove parenthesized power-only suffixes, preserving meaningful badge text.
+    s=re.sub(r"\\s*\\(\\s*\\d+(?:\\.\\d+)?\\s*(?:HP|PS|kW|bhp).*?\\)\\s*$","",s,flags=re.I)
+    return s.strip()
+
+def build_variants_from_engines():
+    src=DIST/"engines.csv"; out=DIST/"variants.csv"
+    seen={}
+    if src.exists():
+        with src.open(encoding="utf-8",newline="") as f:
+            for r in csv.DictReader(f):
+                make=norm_make(r.get("make","")); model=clean(r.get("model","")); label=variant_name(r.get("engine_label",""))
+                if not (make and model and label): continue
+                key=(make,model,label.casefold())
+                seen.setdefault(key,{"make":make,"model":model,"variant":label,"source":"upstream-engine-label","verified":"false","sort_order":"999"})
+    curated=ROOT/"data"/"curated-variants.csv"
+    if curated.exists():
+        with curated.open(encoding="utf-8-sig",newline="") as f:
+            for r in csv.DictReader(f):
+                make=norm_make(r.get("make","")); model=clean(r.get("model","")); label=clean(r.get("variant",""))
+                if not (make and model and label): continue
+                seen[(make,model,label.casefold())]={"make":make,"model":model,"variant":label,"source":r.get("source","curated"),"verified":r.get("verified","true"),"sort_order":r.get("sort_order","999")}
+    rows=sorted(seen.values(),key=lambda r:(r["make"].casefold(),r["model"].casefold(),int(r["sort_order"] or 999),r["variant"].casefold()))
+    with out.open("w",encoding="utf-8",newline="") as g:
+        fields=["make","model","variant","sort_order","source","verified"]; w=csv.DictWriter(g,fieldnames=fields); w.writeheader(); w.writerows(rows)
+    return rows
+
 def build_catalog():
     rows=[]
     with (DIST/"makes-models.csv").open(encoding="utf-8",newline="") as f:
@@ -71,15 +102,13 @@ def build_catalog():
         m=makes.setdefault(r["make"],{"name":r["make"],"market":r["market"],"priority":int(r["market_priority"]),"models":[]})
         m["models"].append({"name":r["model"],"yearFrom":int(r["year_start"]) if r.get("year_start","").isdigit() else None,
                             "yearTo":int(r["year_end"]) if r.get("year_end","").isdigit() else None})
-    # Attach verified commercial variants used by the public listing picker.
-    curated=ROOT/"data"/"curated-variants.csv"
+    # Every upstream engine row contributes a selectable variant so existing listings
+    # are never hidden. Curated market badges are merged in and sorted first.
+    variant_rows=build_variants_from_engines()
     variant_map={}
-    if curated.exists():
-        with curated.open(encoding="utf-8-sig",newline="") as vf:
-            for v in csv.DictReader(vf):
-                if str(v.get("verified","")).lower()!="true": continue
-                key=(norm_make(v["make"]),clean(v["model"]))
-                variant_map.setdefault(key,[]).append({"name":clean(v["variant"]),"sortOrder":int(v.get("sort_order") or 999)})
+    for v in variant_rows:
+        key=(v["make"],v["model"])
+        variant_map.setdefault(key,[]).append({"name":v["variant"],"sortOrder":int(v["sort_order"] or 999),"verified":str(v["verified"]).lower()=="true"})
     for make in makes.values():
         for model in make["models"]:
             model["variants"]=sorted(variant_map.get((make["name"],model["name"]),[]),key=lambda x:(x["sortOrder"],x["name"].lower()))
