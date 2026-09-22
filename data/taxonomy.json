@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "locale_default": "en",
+  "fuel_types": [
+    "Petrol",
+    "Diesel",
+    "Hybrid",
+    "Plug-in Hybrid",
+    "Electric",
+    "LPG",
+    "CNG",
+    "Hydrogen",
+    "Ethanol/Flex Fuel",
+    "Other"
+  ],
+  "transmissions": [
+    "Manual",
+    "Automatic",
+    "CVT",
+    "DCT",
+    "Automated Manual",
+    "Other"
+  ],
+  "drivetrains": [
+    "FWD",
+    "RWD",
+    "AWD",
+    "4WD",
+    "Other"
+  ],
+  "body_types": [
+    "Sedan",
+    "Hatchback",
+    "Estate/Wagon",
+    "SUV",
+    "Crossover",
+    "Coupe",
+    "Convertible",
+    "MPV",
+    "Pickup",
+    "Van",
+    "Minibus",
+    "Other"
+  ],
+  "conditions": [
+    "New",
+    "Used",
+    "Damaged",
+    "For parts"
+  ],
+  "seller_types": [
+    "Private seller",
+    "Dealer"
+  ],
+  "emission_standards": [
+    "Euro 1",
+    "Euro 2",
+    "Euro 3",
+    "Euro 4",
+    "Euro 5",
+    "Euro 6",
+    "Other"
+  ],
+  "colors": [
+    "Black",
+    "White",
+    "Silver",
+    "Grey",
+    "Blue",
+    "Red",
+    "Green",
+    "Brown",
+    "Beige",
+    "Yellow",
+    "Orange",
+    "Purple",
+    "Gold",
+    "Other"
+  ]
+}
