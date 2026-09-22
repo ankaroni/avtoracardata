@@ -1,0 +1,25 @@
+make,model,variant,sort_order,source,verified
+Mercedes-Benz,A-Class,A 140,10,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 150,20,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 160,30,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 160 CDI,40,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 160 d,50,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 170,60,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 170 CDI,70,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 180,80,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 180 CDI,90,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 180 d,100,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 190,110,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 200,120,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 200 CDI,130,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 200 d,140,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 200 Turbo,150,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 210,160,mercedes-club-guide,true
+Mercedes-Benz,A-Class,A 220 CDI,170,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 220 d,180,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 250,190,secondary-crosscheck,true
+Mercedes-Benz,A-Class,A 250 e,200,secondary-crosscheck,true
+Mercedes-Benz,A-Class,AMG A 35,210,secondary-crosscheck,true
+Mercedes-Benz,A-Class,AMG A 45,220,secondary-crosscheck,true
+Mercedes-Benz,A-Class,AMG A 45 S,230,secondary-crosscheck,true
+Mercedes-Benz,A-Class,E-CELL,240,mercedes-club-guide,true
