@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Import verified commercial variants
-        if: github.event_name != 'push' || github.event.head_commit.message != 'data: refresh all-brand vehicle variants'
+        if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
         run: python scripts/import_fleetbyte_variants.py
       - name: Build catalog
         run: python scripts/build_catalog.py
@@ -40,7 +40,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fleetbyte-variants.csv dist
+          git add dist
+          test ! -f data/fleetbyte-variants.csv || git add data/fleetbyte-variants.csv
           git diff --cached --quiet || git commit -m "data: refresh all-brand vehicle variants"
           git pull --rebase origin main
           git push
