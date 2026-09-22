@@ -96,11 +96,20 @@ def build_catalog():
     with (DIST/"makes-models.csv").open(encoding="utf-8",newline="") as f:
         rows=list(csv.DictReader(f))
     rows.sort(key=lambda r:(int(r.get("market_priority") or 999),r["make"].lower(),r["model"].lower()))
-    makes={}
+    makes={}; model_index={}
     for r in rows:
         m=makes.setdefault(r["make"],{"name":r["make"],"market":r["market"],"priority":int(r["market_priority"]),"models":[]})
-        m["models"].append({"name":r["model"],"yearFrom":int(r["year_start"]) if r.get("year_start","").isdigit() else None,
-                            "yearTo":int(r["year_end"]) if r.get("year_end","").isdigit() else None})
+        key=(r["make"],r["model"])
+        yf=int(r["year_start"]) if r.get("year_start","").isdigit() else None
+        yt=int(r["year_end"]) if r.get("year_end","").isdigit() else None
+        if key not in model_index:
+            model={"name":r["model"],"yearFrom":yf,"yearTo":yt}
+            m["models"].append(model); model_index[key]=model
+        else:
+            model=model_index[key]
+            if yf is not None: model["yearFrom"]=yf if model["yearFrom"] is None else min(model["yearFrom"],yf)
+            if yt is None: model["yearTo"]=None
+            elif model["yearTo"] is not None: model["yearTo"]=max(model["yearTo"],yt)
     # Public picker exposes curated commercial badges only.
     variant_rows=build_variants_from_engines()
     variant_map={}
