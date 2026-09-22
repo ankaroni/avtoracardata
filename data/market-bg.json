@@ -1,0 +1,12 @@
+{
+  "market": "BG",
+  "currency": "BGN",
+  "canonicalLanguage": "en",
+  "uiLanguages": ["bg","en"],
+  "priorityPolicy": "sorting-only",
+  "notes": [
+    "All global makes remain searchable.",
+    "Priority affects default ordering only.",
+    "Do not claim a vehicle was officially sold in Bulgaria solely because it exists in the upstream catalog."
+  ]
+}
