@@ -1,6 +1,12 @@
 name: Build Bulgaria vehicle catalog
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - "data/**"
+      - ".github/workflows/build-catalog.yml"
   schedule:
     - cron: "17 3 * * 1"
 permissions:
