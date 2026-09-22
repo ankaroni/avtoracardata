@@ -1,0 +1,23 @@
+{
+  "fleetbyte-catalog": {
+    "publisher": "Disturbing Byte",
+    "title": "fleetByte Catalog API",
+    "baseUrl": "https://fleetcatalog.disturbingbyte.pt",
+    "use": "Commercial make/model/variant names",
+    "verification": "API-approved public records"
+  },
+  "vehicle-makes-models": {
+    "publisher": "gor3a",
+    "title": "vehicle-makes-models",
+    "use": "Global make/model and technical engine source",
+    "license": "ODbL-1.0"
+  },
+  "mercedes-club-guide": {
+    "title": "Mercedes-Benz club technical model guide",
+    "use": "Curated Mercedes-Benz badge cross-check"
+  },
+  "secondary-crosscheck": {
+    "title": "Legacy manual cross-check",
+    "use": "Temporary; replace with named provenance during curation"
+  }
+}
